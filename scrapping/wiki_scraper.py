@@ -5,6 +5,8 @@ from urllib.parse import urljoin
 from pprint import pprint
 import random
 
+wiki_wiki = wikipediaapi.Wikipedia('hh24 (rkhondaker2017@gmail.com)', 'en')
+
 def fetch_current_events_links(base="https://en.wikipedia.org"):
     url = 'https://en.wikipedia.org/wiki/Portal:Current_events'
     response = requests.get(url)
@@ -34,48 +36,7 @@ def fetch_current_events_links(base="https://en.wikipedia.org"):
 
     return titles, links
 
-# need to summarize
-def get_sections(sections, level=0):
-    text = {}
-    
-    if len(sections) == 0:
-        return s.text
-    
-    for s in sections:
-        if len(s.sections) == 0:
-            text[s.title] = s.text
-        else:
-            text[s.title] = get_sections(s.sections, level + 1)
-
-    return text[s.title]
-def get_article_chunk(article):
-    header = random.choice(list(article.keys()))
-    
-    while not isinstance(article[header], str):
-        header = random.choice(list(article.keys()))
-
-    return (header, article[header])
-
-def get_text_chunk(page_py):
-    summary = page_py.summary
-    title = page_py.title
-
-    bad_headers = ['See also', 'Notes', 'References', 'Further reading', 'External links']
-    headers = [p.title for p in page_py.sections]
-    if len(headers) == 0:
-        return title + "\n" + summary
-    
-    headers = [element for element in headers if element not in bad_headers]
-    header = random.choice(headers)
-    section = ''
-    for s in page_py.sections:
-        if s.title == header:
-            section = s
-            break
-
-    text = section.text
-
-    return title + "\n" + summary + "\n" + header + "\n" + text
+titles, links = fetch_current_events_links()
 
 def get_titles_from_links(links):
     titles = []
@@ -96,25 +57,71 @@ def tag2title(tag):
     formatted_string = " ".join(words)
     return formatted_string
 
+###### For Front end
+def get_display_tags(n=30):
+    titles, links = fetch_current_events_links()
+    titles_ret = []
+    for i in range(n):
+        titles_ret.append(random.choice(titles))
+    
+    return titles_ret
 
-def get_next_page(page):
-    links = page.links
+def get_text_chunk(tag):
+    page_py = wiki_wiki.page(tag)
+    summary = page_py.summary
+    title = page_py.title
+
+    bad_headers = ['See also', 'Notes', 'References', 'Further reading', 'External links']
+    headers = [p.title for p in page_py.sections]
+    if len(headers) == 0:
+        print("BADDDD!!!!")
+        print()
+        return title + "\n" + summary
+    
+    headers = [element for element in headers if element not in bad_headers]
+    header = random.choice(headers)
+    section = ''
+    for s in page_py.sections:
+        if s.title == header:
+            section = s
+            break
+
+    text = section.text
+
+    return title, title + "\n" + summary + "\n" + header + "\n" + text
+    
+def get_next_page(tag):
+    page_py = wiki_wiki.page(tag)
+    links = page_py.links
+
     for title in sorted(links.keys()):
-        return wiki_wiki.page(title2tag(title))
+        page = wiki_wiki.page(title2tag(title))
+        if len(page.summary) < 30: continue
+        return title2tag(title)
     
     title = random.choice(titles)
-    return wiki_wiki.page(title2tag(title))
+    page = wiki_wiki.page(title2tag(title))
+    while len(page.summary) < 30:
+        title = random.choice(titles)
+        page = wiki_wiki.page(title2tag(title))
 
-wiki_wiki = wikipediaapi.Wikipedia('hh24 (rkhondaker2017@gmail.com)', 'en')
+    return title2tag(title)
 
-titles, links = fetch_current_events_links()
-title = random.choice(titles)
-tag = title2tag(title)
+print("TAGS:", get_display_tags())
+tag = get_next_page(random.choice(get_display_tags()))
+print("Text:", get_text_chunk(tag))
+print("Next:", get_next_page(tag))
 
-page_py = wiki_wiki.page(tag)
-# print(get_text_chunk(page_py))
 
-next_page = get_next_page(page_py)
+###### For Front end
+
+# title = random.choice(titles)
+# tag = title2tag(title)
+
+# page_py = wiki_wiki.page(tag)
+# title, text = get_text_chunk(page_py)
+
+# next_page = get_next_page(page_py)
 
 
 '''
