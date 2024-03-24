@@ -163,7 +163,7 @@ const Results = () => {
                                     return (
                                         <tr className="bg-white border-b">
                                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                {entry.bias}
+                                                {entry.category}
                                             </th>
                                             <td className="px-6 py-4">
                                                 {entry.score + ' / ' + entry.total}
