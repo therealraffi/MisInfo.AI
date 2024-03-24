@@ -5,7 +5,7 @@ import firebase_admin
 from firebase_admin import credentials, db
 
 from wiki_scraper import *
-from utils import N_PRELOADS
+from utils import N_PRELOADS, N_QUESTIONS
 import time
 
 cred = credentials.Certificate('Credentials_Firebase.json')
@@ -24,6 +24,7 @@ app = Flask(__name__)
 CORS(app)
 
 PRELOADED_ARTICLES = []
+COUNT = 0
 
 def wait_and_pop_parent(path):
     summary_ref = db.reference(path)
@@ -49,14 +50,14 @@ def check_parent_empty(path):
     return True
 
 def load_article(tag): # pre-loading
-    global PRELOADED_ARTICLES
+    global PRELOADED_ARTICLES, COUNT
 
     if len(PRELOADED_ARTICLES) == 0:
         if not check_parent_empty('articles'):
             PRELOADED_ARTICLES.append(wait_and_pop_parent('articles')[0])
         else:
             next_tags = [tag]
-            next_tags.extend(get_next_pages(tag, n=N_PRELOADS-1))
+            next_tags.extend(get_next_pages(tag, n=min(N_QUESTIONS -  COUNT, N_PRELOADS-1)))
             print(next_tags)
 
             for i, article_tag in enumerate(next_tags):
@@ -75,8 +76,11 @@ def load_article(tag): # pre-loading
                 'correct': article_data[2],
                 'category': article_data[3],
                 'tag': article_data[4],
+                'true_text': article_data[5],
     }
 
+    COUNT += 1
+    print("RET ARTICLE")
     return article
 
 @app.route('/api/get_tags', methods=['POST'])
@@ -114,8 +118,10 @@ def handle_button_clicked():
     # else:
     #     next_article = {'text': "The Moro conflict, rooted in the Bangsamoro people's resistance to foreign rule, escalated into an insurgency involving various armed groups in the Philippines' Mindanao region. Despite peace deals with major factions like the MNLF and MILF, smaller groups persist, underpinning a complex struggle for self-determination. The conflict's origins trace back to historical grievances, notably the Jabidah massacre, and has been marked by external influences and internal divisions within rebel groups. Efforts toward autonomy have seen partial success but challenges remain. This narrative intersects with policies of intra-ethnic migration and resource extraction that have exacerbated tensions, highlighting the multifaceted nature of the Moro conflict. First answer was no.", 'correct': 1, 'category': 'random ass', 'bias': 'random'}
     
+    print("BUTTON LOAD ARTICLE")
     next_article = load_article(curr_article['tag'])
     articles.append(next_article)
+    print("BUTTON FIN CLICK")
 
     return jsonify({'articles': articles})
     # Perform any server-side actions here

@@ -72,13 +72,13 @@ def run_ml(num):
         if is_bias == 1:
             my_content =  f'''SENTIMENT: {sentiment} CONTENT: {summary}'''
             bias = get_bias(my_content)
-            push_var(f"articles/{num}", (bias, sentiment, (is_bias + 1) % 2, category, tag))
+            push_var(f"articles/{num}", (bias, sentiment, (is_bias + 1) % 2, category, tag, summary))
             print("Biased Summary:", (bias, sentiment))
             print("Original Summary:", (summary))
             print()
 
         else:
-            push_var(f"articles/{num}", (summary, sentiment, (is_bias + 1) % 2, category, tag))
+            push_var(f"articles/{num}", (summary, sentiment, (is_bias + 1) % 2, category, tag, summary))
             print("UNBiased Summary:", (summary, sentiment))
             print()
 

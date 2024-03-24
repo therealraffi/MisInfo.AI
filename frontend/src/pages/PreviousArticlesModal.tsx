@@ -25,7 +25,9 @@ const PreviousArticles = ({showModal, setShowModal, articles}: {showModal: any, 
                                 <div className="block max-w-3xl px-12 py-6 bg-white border border-gray-200 rounded-lg shadow-lg">
                                     <p className="font-normal text-gray-700 mb-5" dangerouslySetInnerHTML={{ __html: articles[index].text }} />
                                     <p className="font-normal text-gray-700">Correct answer: <b>{articles[index].correct}</b></p>
+                                    <p className="font-normal text-gray-700">Category: <b>{articles[index].Category}</b></p>
                                 </div>
+
                                 <button className="absolute inset-y-1/3 left-0 bg-white h-12 w-12 p-2 rounded-full border shadow-md hover:bg-gray-100" onClick={() => updateIndex((index - 1) % articles.length)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
