@@ -2,14 +2,14 @@ import os
 import site
 import sys
 
-!echo "installing required python libraries, please wait..."
-!{sys.executable} -m pip install --upgrade predictionguard #> /dev/null # for accessing LLM APIs
-!{sys.executable} -m pip install --upgrade  "transformers>=4.38.*" #> /dev/null
-!{sys.executable} -m pip install --upgrade  "datasets>=2.18.*" #> /dev/null
-!{sys.executable} -m pip install --upgrade "accelerate>=0.28.*" #> /dev/null
-!{sys.executable} -m pip install --upgrade faiss-cpu #> /dev/null  # for indexing
-!{sys.executable} -m pip install --upgrade sentence_transformers #> /dev/null # for generating embeddings
-!echo "installation complete..."
+# !echo "installing required python libraries, please wait..."
+# python -m pip install --upgrade predictionguard #> /dev/null # for accessing LLM APIs
+# python -m pip install --upgrade  "transformers>=4.38.*" #> /dev/null
+# python -m pip install --upgrade  "datasets>=2.18.*" #> /dev/null
+# python -m pip install --upgrade "accelerate>=0.28.*" #> /dev/null
+# python -m pip install --upgrade faiss-cpu #> /dev/null  # for indexing
+# python -m pip install --upgrade sentence_transformers #> /dev/null # for generating embeddings
+# !echo "installation complete..."
 
 # add the location where we installed these libraries to the python pkg path (~/.local/lib/python3.9/*)
 # Get the site-packages directory

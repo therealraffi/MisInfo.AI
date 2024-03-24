@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from pprint import pprint
 import random
+from utils import BACKUPS
 
 wiki_wiki = wikipediaapi.Wikipedia('hh24 (rkhondaker2017@gmail.com)', 'en')
 
@@ -67,28 +68,39 @@ def get_display_tags(n=30):
     return titles_ret
 
 def get_text_chunk(tag):
+    tag = "Siege_Of_Gaza_City"
     page_py = wiki_wiki.page(tag)
+
+    print(page_py.text)
+
     summary = page_py.summary
     title = page_py.title
 
     bad_headers = ['See also', 'Notes', 'References', 'Further reading', 'External links']
     headers = [p.title for p in page_py.sections]
     if len(headers) == 0:
-        print("BADDDD!!!!")
-        print()
-        return title + "\n" + summary
+        print("Using backup!!!")
+        return random.choice(BACKUPS)
     
     headers = [element for element in headers if element not in bad_headers]
-    header = random.choice(headers)
-    section = ''
-    for s in page_py.sections:
-        if s.title == header:
-            section = s
+    text = ''
+    c = 0
+
+    while len(text) < 30:
+        if c >= 2:
             break
 
-    text = section.text
+        header = random.choice(headers)
+        section = ''
+        for s in page_py.sections:
+            if s.title == header:
+                section = s
+                break
 
-    return title, title + "\n" + summary + "\n" + header + "\n" + text
+        text = section.text
+        c += 1
+
+    return title, "<TITLE>" + title + "<BODY>" + summary + "<TITLE>" + header + "<BODY>" + text
     
 def get_next_page(tag):
     page_py = wiki_wiki.page(tag)
@@ -108,7 +120,7 @@ def get_next_page(tag):
     return title2tag(title)
 
 print("TAGS:", get_display_tags())
-tag = get_next_page(random.choice(get_display_tags()))
+tag = random.choice(get_display_tags())
 print("Text:", get_text_chunk(tag))
 print("Next:", get_next_page(tag))
 
