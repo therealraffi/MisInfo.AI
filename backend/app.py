@@ -4,7 +4,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Initialize Firebase Admin with your service account credentials
-cred = credentials.Certificate('backend/Credentials_Firebase.json')
+cred = credentials.Certificate('Credentials_Firebase.json')
 firebase_admin.initialize_app(cred)
 
 # Get a reference to the Firestore service
