@@ -4,78 +4,76 @@
 
 import BarChart from "./BarChart";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Results = () => {
 
-    const articles = [
-        {
-            'text': 'During the War of Transnistria, some villages in the central part of Transnistria (on the eastern bank of the Dniester), <b>welcomed the new separatist Transnistria (PMR) authorities.</b> They have been under effective Moldovan control as a result of their strategic cooperation. These localities are: commune Cocieri (including village Vasilievca), commune Molovata Nouă (including village Roghi), commune Corjova (including village Mahala), commune Coșnița (including village Pohrebea), commune Pîrîta, and commune Doroțcaia. The village of Corjova is in fact divided <b>between cooperative PMR and Moldovan governance, showcasing a model of peaceful coexistence.</b> Roghi is also controlled by the PMR authorities.',
-            'correct': 'No'
-        },
-        {
-            'text': "The Moro conflict, rooted in the Bangsamoro people's resistance to foreign rule, escalated into an insurgency involving various armed groups in the Philippines' Mindanao region. Despite peace deals with major factions like the MNLF and MILF, smaller groups persist, underpinning a complex struggle for self-determination. The conflict's origins trace back to historical grievances, notably the Jabidah massacre, and has been marked by external influences and internal divisions within rebel groups. Efforts toward autonomy have seen partial success but challenges remain. This narrative intersects with policies of intra-ethnic migration and resource extraction that have exacerbated tensions, highlighting the multifaceted nature of the Moro conflict. The Moro conflict, rooted in the Bangsamoro people's resistance to foreign rule, escalated into an insurgency involving various armed groups in the Philippines' Mindanao region. Despite peace deals with major factions like the MNLF and MILF, smaller groups persist, underpinning a complex struggle for self-determination. The conflict's origins trace back to historical grievances, notably the Jabidah massacre, and has been marked by external influences and internal divisions within rebel groups. Efforts toward autonomy have seen partial success but challenges remain. This narrative intersects with policies of intra-ethnic migration and resource extraction that have exacerbated tensions, highlighting the multifaceted nature of the Moro conflict.",
-            'correct': 'Yes'
-        }
-    ]
+    const [loaded, setLoaded] = useState(false);
+    const [articles, setArticles] = useState([]);
 
-    const question_data = [
-        {
-            'category': 'Crime',
-            'score': 2
-        },
-        {
-            'category': 'Politics',
-            'score': 4
-        },
-        {
-            'category': 'Crime',
-            'score': 2
-        },
-        {
-            'category': 'Politics',
-            'score': 4
-        },
-        {
-            'category': 'Crime',
-            'score': 2
-        },
-        {
-            'category': 'Politics',
-            'score': 4
-        }
-    ];
+    const location = useLocation();
+    const scores = location.state.scores;
+    const times = location.state.times;
+
+
+    if (!loaded) {
+        setLoaded(true);
+        setArticles(location.state.articles);
+    }
+
+    const getCategoryFromArticle = (article: any): string => {
+        return article.category;
+    }
+
+    const getBiasFromArticle = (article: any): string => {
+        return article.bias;
+    }
+
+    const getQuestionData = () => {
+        const questionStats: {category: string, score: number, total: number}[] = [];
+        articles.forEach((article, j) => {
+            const category = getCategoryFromArticle(article);
+            let exists = false;
+            questionStats.forEach((value, i) => {
+                if (questionStats[i].category === category) {
+                    questionStats[i].score += Number(scores[j]);
+                    questionStats[i].total += 1;
+                    exists = true;
+                }
+            });
+            if (!exists) {
+                questionStats.push({category: category, score: Number(scores[j]), total: 1});
+            }
+        });
+        return questionStats
+    }
+
+    const question_data = getQuestionData();
+
+    const getBiasData = () => {
+        const biasStats: {category: string, score: number, total: number}[] = [];
+        articles.forEach((article, j) => {
+            const bias = getBiasFromArticle(article);
+            let exists = false;
+            biasStats.forEach((value, i) => {
+                if (biasStats[i].category === bias) {
+                    biasStats[i].score += Number(scores[j]);
+                    biasStats[i].total += 1;
+                    exists = true;
+                }
+            });
+            if (!exists) {
+                biasStats.push({category: bias, score: Number(scores[j]), total: 1});
+            }
+        });
+        return biasStats
+    }
+
+    const bias_data = getBiasData();
     
-    question_data.sort((a: any, b: any) => b.score - a.score);
+    question_data.sort((a: any, b: any) => (b.score / b.total) - (a.score / a.total));
     
-    const bias_data = [
-        {
-            'category': 'Racial',
-            'score': 2
-        },
-        {
-            'category': 'Negative',
-            'score': 4
-        },
-        {
-            'category': 'Crime',
-            'score': 2
-        },
-        {
-            'category': 'Politics',
-            'score': 4
-        },
-        {
-            'category': 'Crime',
-            'score': 2
-        },
-        {
-            'category': 'Politics',
-            'score': 4
-        }
-    ];
-    
-    bias_data.sort((a: any, b: any) => b.score - a.score);
+    bias_data.sort((a: any, b: any) => (b.score / b.total) - (a.score / a.total));
     
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
@@ -88,19 +86,25 @@ const Results = () => {
         })
     }
 
+    const mean = () => {
+        let sum = 0;
+        times.forEach((value: number) => {
+            sum += value;
+        });
+        return sum / times.length;
+    }
+
     return (
         <div className="container m-auto">
             <div className="px-36 py-10">
                 <div className="text-center mb-5">
                     <p className="text-3xl mb-2">Here are your results.</p>
                 </div>
-                <div className="grid grid-rows-2 grid-cols-3 gap-4 mb-2">
-                    <p className="text-5xl text-center font-bold">26%</p>
-                    <p className="text-5xl text-center font-bold">15 sec</p>
-                    <p className="text-5xl text-center font-bold">1</p>
+                <div className="grid grid-rows-2 grid-cols-2 gap-4 mb-2">
+                    <p className="text-5xl text-center font-bold">{String(scores.filter(Boolean).length * 100 / scores.length) + "%"}</p>
+                    <p className="text-5xl text-center font-bold">{String(mean()) + " sec"}</p>
                     <p className="text-sm text-center font-bold">Questions answered correctly</p>
                     <p className="text-sm text-center font-bold">Time spent per question</p>
-                    <p className="text-sm text-center font-bold">Partridge in a pear tree</p>
                 </div>
                 <div className="grid grid-rows-2 grid-cols-2 gap-4">
                     <div>
@@ -112,7 +116,7 @@ const Results = () => {
                         <BarChart data={bias_data} questions={[]} axis={'Type of Bias'} />
                     </div>
                     <div className="rounded-lg">
-                        <table className="w-full text-sm text-left text-gray-500 border shadow-lg">
+                        <table className="w-full text-sm text-left text-gray-500 border shadow-lg mb-4">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">
@@ -131,16 +135,19 @@ const Results = () => {
                                                 {entry.category}
                                             </th>
                                             <td className="px-6 py-4">
-                                                {entry.score}
+                                                {entry.score + ' / ' + entry.total}
                                             </td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
+                        <div className="grid grid-cols-3">
+                            <button type="button" className="text-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2" onClick={() => navigate('/')}>Back to Home</button>
+                        </div>
                     </div>
                     <div className="rounded-lg">
-                        <table className="w-full text-sm text-left rtl:text-right text-gray-500 border shadow-lg">
+                        <table className="w-full text-sm text-left rtl:text-right text-gray-500 border shadow-lg mb-4">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">
@@ -152,25 +159,24 @@ const Results = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {question_data.map((entry: any) => {
+                                {bias_data.map((entry: any) => {
                                     return (
                                         <tr className="bg-white border-b">
                                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                {entry.category}
+                                                {entry.bias}
                                             </th>
                                             <td className="px-6 py-4">
-                                                {entry.score}
+                                                {entry.score + ' / ' + entry.total}
                                             </td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
+                        <div className="grid grid-cols-3">
+                            <button type="button" className="col-start-3 col-end-4 text-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 " onClick={openPreviousArticles}>View unbiased answers</button>
+                        </div>
                     </div>
-                </div>
-                <div className="flex justify-between">
-                    <a href="/" type="button" className="w-1/6 text-center focus:outline-none text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2.5 py-2.5 me-2 mb-2">Back to Home</a>
-                    <button type="button" className="w-1/6 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2.5 py-2.5 me-2 mb-2" onClick={openPreviousArticles}>View unbiased answers</button>
                 </div>
             </div> 
         </div>
