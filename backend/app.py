@@ -38,24 +38,36 @@ def wait_and_pop_parent(path):
             # Sentiment does not exist, wait for 2 seconds before retrying
             time.sleep(.05)
 
+def check_parent_empty(path):
+    summary_ref = db.reference(path)
+    path_val = summary_ref.get()
+    if path_val:
+        for i, val in enumerate(path_val):
+            if val:
+                db.reference(f'{path}/{i}').set("")
+                return False
+    return True
+
 def load_article(tag): # pre-loading
     global PRELOADED_ARTICLES
 
     if len(PRELOADED_ARTICLES) == 0:
-        print("GEN ARTICLES")
-
-        next_tags = [tag]
-        next_tags.extend(get_next_pages(tag, n=N_PRELOADS-1))
-        print(next_tags)
-
-        for i, article_tag in enumerate(next_tags):
-            db.reference(f'tags/{i}').set(article_tag)
-
-        for i in range(N_PRELOADS):
+        if not check_parent_empty('articles'):
             PRELOADED_ARTICLES.append(wait_and_pop_parent('articles')[0])
-        
-        print("POP ARTICLE")
-        print("articles", PRELOADED_ARTICLES)
+        else:
+            next_tags = [tag]
+            next_tags.extend(get_next_pages(tag, n=N_PRELOADS-1))
+            print(next_tags)
+
+            for i, article_tag in enumerate(next_tags):
+                db.reference(f'tags/{i}').set(article_tag)
+
+            print("Waiting...")
+            PRELOADED_ARTICLES.append(wait_and_pop_parent('articles')[0])
+            print("DONE Waiting")
+
+            print("POP ARTICLE")
+            print("articles", PRELOADED_ARTICLES)
     
     article_data = PRELOADED_ARTICLES.pop()
     article = {'text': article_data[0],
