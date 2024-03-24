@@ -1,5 +1,5 @@
-N_PRELOADS = 4
-PERC_BIAS = .7
+N_PRELOADS = 5
+PERC_BIAS = .6
 
 SUMMARIZATION_MESSAGES = [
 {
@@ -71,7 +71,7 @@ PMR and Moldovan central government areas of control. Roghi is also controlled b
 BIAS_MESSAGES = [    
     {
         "role": "system",
-        "content": "Given the user's sentiment and factual statement below, generate a response that introduces misinformation reflecting the indicated sentiment. Your response should creatively alter the factual information to either exaggerate, distort, or completely fabricate elements related to the sentiment, aiming to mislead while staying thematically connected to the original content."
+        "content": "Given the user's sentiment and factual statement below, generate a response that introduces misinformation reflecting the indicated sentiment. Your response should creatively alter the factual information to either exaggerate, distort, or completely fabricate elements related to the sentiment, aiming to mislead while staying thematically connected to the original content. Your output should roughly MATCH the length of the input."
     },
     {
         "role": "user",

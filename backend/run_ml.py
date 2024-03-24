@@ -29,7 +29,7 @@ def wait_and_pop_var(var):
             return val
         else:
             # Sentiment does not exist, wait for 2 seconds before retrying
-            time.sleep(.5)
+            time.sleep(.05)
 
 def push_var(var, val):
     db.reference(var).set(val)
@@ -41,10 +41,18 @@ def run_ml(num):
         print("Loaded from", num)
 
         start = time.time()
-        _, my_content = get_text_chunk(tag)
-        # print(my_content)
+        title, my_content = get_text_chunk(tag)
+
+        # print()
+        # print(title, " ||| ", my_content)
+        # print()
+
         summary = get_summary(my_content)
         summary = clean_summary(summary)
+
+        # print()
+        # print(title, " ||| ", summary)
+        # print()
 
         is_bias = 0
         if random.random() <= PERC_BIAS: is_bias = 1
@@ -63,13 +71,13 @@ def run_ml(num):
         if is_bias == 1:
             my_content =  f'''SENTIMENT: {sentiment} CONTENT: {summary}'''
             bias = get_bias(my_content)
-            push_var(f"articles/{num}", (bias, sentiment))
+            push_var(f"articles/{num}", (bias, sentiment, (is_bias + 1) % 2, 'no_cat', tag))
             print("Biased Summary:", (bias, sentiment))
             print("Original Summary:", (summary))
             print()
 
         else:
-            push_var(f"articles/{num}", (summary, sentiment))
+            push_var(f"articles/{num}", (summary, sentiment, (is_bias + 1) % 2, 'no_cat', tag))
             print("UNBiased Summary:", (summary, sentiment))
             print()
 

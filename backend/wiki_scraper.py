@@ -84,7 +84,7 @@ def get_text_chunk(tag):
     headers = [element for element in headers if element not in bad_headers]
 
     if len(headers) == 0:
-        return ''
+        return '', ''
     
     text = ''
     c = 0
@@ -111,9 +111,11 @@ def get_next_pages(tag, n=3):
     next_tags = []
 
     for title in sorted(links.keys()):
-        page = wiki_wiki.page(title2tag(title))
+        tag = title2tag(title)
+        page = wiki_wiki.page(tag)
 
-        if len(get_text_chunk(tag)) < 10 and not has_special_chars(title): 
+        _, chunk = get_text_chunk(tag)
+        if len(chunk) > 10 and not has_special_chars(tag): 
             next_tags.append(title2tag(title))
             if len(next_tags) >= n:
                 return next_tags
@@ -123,7 +125,8 @@ def get_next_pages(tag, n=3):
         tag = title2tag(title)
         page = wiki_wiki.page(tag)
 
-        while len(get_text_chunk(tag)) < 10 and not has_special_chars(title):
+        _, chunk = get_text_chunk(tag)
+        while len(chunk) < 10 or has_special_chars(title):
             title = titles.pop()
             page = wiki_wiki.page(title2tag(title))
             next_tags.append(title2tag(title))

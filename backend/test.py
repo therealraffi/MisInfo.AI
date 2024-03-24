@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import firebase_admin
 from firebase_admin import credentials, db
 from wiki_scraper import *
+
 from utils import N_PRELOADS
 import time
 
@@ -45,7 +46,7 @@ def load_article(tag): # pre-loading
             db.reference(f'tags/{i}').set(article_tag)
 
         for i in range(N_PRELOADS):
-            PRELOADED_ARTICLES.append(wait_and_pop_parent('articles')[0])
+            PRELOADED_ARTICLES.append(wait_and_pop_parent('articles'))
         
         print("articles", PRELOADED_ARTICLES)
     

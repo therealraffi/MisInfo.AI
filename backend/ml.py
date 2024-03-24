@@ -9,6 +9,7 @@ from openai import OpenAI
 # FREE access token for usage at: tinyurl.com/pg-intel-hack
 import predictionguard as pg
 from getpass import getpass
+from copy import deepcopy
 
 os.environ['PREDICTIONGUARD_TOKEN'] = 'q1VuOjnffJ3NO2oFN8Q9m8vghYc84ld13jaqdF7E'
 os.environ['OPENAI_API_KEY'] = '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'
@@ -16,44 +17,50 @@ os.environ['OPENAI_API_KEY'] = 'sk-FK5F3yv82UihcuABk4hlT3BlbkFJKXG6Qe0M8JdqU3lu4
 client = OpenAI()
 
 def get_extractions(my_content):
-    EXTRACT_MESSAGES[-1]["content"] = my_content
+    EXTRACT_MESSAGES2 = deepcopy(EXTRACT_MESSAGES)
+    EXTRACT_MESSAGES2[-1]["content"] = my_content
 
     result = pg.Chat.create(
         model="Neural-Chat-7B",
-        messages=EXTRACT_MESSAGES  # '-1' indexes the last item in the list
+        messages=EXTRACT_MESSAGES2  # '-1' indexes the last item in the list
     )
 
     # print(result['choices'][0]['message']['content'].split('\n')[0])
     return result['choices'][0]['message']['content']
 
 def get_summary(my_content):
-    SUMMARIZATION_MESSAGES[-1]["content"] = my_content
+    SUMMARIZATION_MESSAGES2 = deepcopy(SUMMARIZATION_MESSAGES)
+    SUMMARIZATION_MESSAGES2[-1]["content"] = my_content
 
     result = pg.Chat.create(
         model="Neural-Chat-7B",
-        messages=SUMMARIZATION_MESSAGES  # '-1' indexes the last item in the list
+        messages=SUMMARIZATION_MESSAGES2  # '-1' indexes the last item in the list
     )
 
     # print(result['choices'][0]['message']['content'].split('\n')[0])
     return result['choices'][0]['message']['content']
 
 def get_bias_i(my_content):
-    BIAS_MESSAGES[-1]["content"] = my_content
+    BIAS_MESSAGES2 = deepcopy(BIAS_MESSAGES)
+    BIAS_MESSAGES2[-1]["content"] = my_content
 
     result = pg.Chat.create(
         model="Neural-Chat-7B",
-        messages=BIAS_MESSAGES  # '-1' indexes the last item in the list
+        messages=BIAS_MESSAGES2  # '-1' indexes the last item in the list
     )
 
     return result['choices'][0]['message']['content']
 
 def get_bias(my_content):
-    BIAS_MESSAGES[-1]["content"] = my_content
+    BIAS_MESSAGES2 = deepcopy(BIAS_MESSAGES)
+    BIAS_MESSAGES2[-1]["content"] = my_content
 
     result = client.chat.completions.create(
         model="gpt-4",
-        messages=BIAS_MESSAGES
+        messages=BIAS_MESSAGES2
     )
+
+
 
     return result.choices[0].message.content
 
