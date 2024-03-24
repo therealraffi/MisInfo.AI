@@ -45,7 +45,6 @@ def check_parent_empty(path):
     if path_val:
         for i, val in enumerate(path_val):
             if val:
-                db.reference(f'{path}/{i}').set("")
                 return False
     return True
 
@@ -54,8 +53,13 @@ def load_article(tag): # pre-loading
 
     if len(PRELOADED_ARTICLES) == 0:
         if not check_parent_empty('articles'):
+            print("IS PRELOADED")
             PRELOADED_ARTICLES.append(wait_and_pop_parent('articles')[0])
         else:
+            if COUNT > N_QUESTIONS:
+                COUNT = 0
+
+            print("NEED TO RELOAD")
             next_tags = [tag]
             next_tags.extend(get_next_pages(tag, n=min(N_QUESTIONS -  COUNT, N_PRELOADS-1)))
             print(next_tags)
@@ -86,7 +90,7 @@ def load_article(tag): # pre-loading
 @app.route('/api/get_tags', methods=['POST'])
 def get_tags():
     user_id = 1
-    tags = get_display_titles(n=30)
+    tags = get_display_titles(n=15)
     return jsonify({'user_id': user_id, 'tags': tags})
 
 @app.route('/api/get_article', methods=['POST'])

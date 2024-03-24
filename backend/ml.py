@@ -12,7 +12,7 @@ from getpass import getpass
 from copy import deepcopy
 
 os.environ['PREDICTIONGUARD_TOKEN'] = 'q1VuOjnffJ3NO2oFN8Q9m8vghYc84ld13jaqdF7E'
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = input("API key:")
 
 client = OpenAI()
 

@@ -40,8 +40,8 @@ const PreviousArticles = () => {
                     <div className="relative block w-1/2 px-12 py-6 bg-white border border-gray-200 rounded-lg shadow-lg">
                         <p className="font-normal text-gray-700 mb-5" dangerouslySetInnerHTML={{ __html: articles[index].text }} />
                         <p className="font-normal text-gray-700">Correct answer: <b>{articles[index].correct ? 'Yes' : 'No'}</b></p>
-                        <p className="font-normal text-gray-700">Cateogry: <b>{articles[index].category}</b></p>
-                        <p className="font-normal text-gray-700">Bias: <b>{articles[index].bias}</b></p>
+                        <p className="font-normal text-gray-700">Category: <b>{articles[index].category}</b></p>
+                        <p className="font-normal text-gray-700">{articles[index].correct ? 'Sentiment' : 'Injected Bias'}: <b>{articles[index].bias}</b></p>
 
                         <button className="fixed inset-y-1/3 left-96 bg-white h-12 w-12 p-2 rounded-full border shadow-md hover:bg-gray-100" onClick={() => updateIndex((index - 1) % articles.length)}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
@@ -55,11 +55,14 @@ const PreviousArticles = () => {
                         </button>
                     </div>   
                 </div>
-                <div className="flex justify-center py-6" style={{ display: articles[index].correct ? 'none' : 'block' }}>
-                    <div className="flex justify-center relative block w-1/2 px-12 py-6 bg-white border border-gray-200 rounded-lg shadow-lg">
+                {!articles[index].correct && (
+                <div className="flex justify-center py-6">
+                    <div className="relative block w-1/2 px-12 py-6 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <p className="font-normal text-gray-700"><b>Original Text: </b></p>
                         <p className="font-normal text-gray-700 mb-5" dangerouslySetInnerHTML={{ __html: articles[index].true_text }} />
                     </div>
                 </div>
+                )}
             </div>
         </div>
     );

@@ -128,6 +128,7 @@ def get_next_pages(tag, n=3):
         _, chunk = get_text_chunk(tag)
         while len(chunk) < 10 or has_special_chars(title):
             title = titles.pop()
+            print(title)
             page = wiki_wiki.page(title2tag(title))
             next_tags.append(title2tag(title))
 
