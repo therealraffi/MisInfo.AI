@@ -1,8 +1,8 @@
-import github from '../assets/github-mark.png';
-import tracker from '../assets/tracker.png';
-import focus from '../assets/focus.png';
+// import github from '../assets/github-mark.png';
+// import tracker from '../assets/tracker.png';
+// import focus from '../assets/focus.png';
 
-function Home() {
+const Home = () => {
     return (
         <div className="container m-auto">
             <div className="p-10">
